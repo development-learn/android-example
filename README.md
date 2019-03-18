@@ -1,2 +1,2 @@
 # android-example
-  安卓端功能实例
+      webrtc 视频聊天客户端
