@@ -2,7 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
-
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 
 
     defaultConfig {
@@ -33,4 +36,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation('com.squareup.okhttp:okhttp-urlconnection:2.7.5')
+    implementation 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
+    implementation 'org.springframework.android:spring-android-core:2.0.0.M3'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
