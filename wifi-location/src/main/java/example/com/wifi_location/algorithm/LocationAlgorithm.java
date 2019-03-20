@@ -30,9 +30,6 @@ public interface LocationAlgorithm {
             return null;
         }
         PointInfo[] ps3 = getPoints(ps);
-//        System.out.println("**点1--->"+ps3[0].getName()+" **坐标--->"+ps3[0].getX()+","+ps3[0].getY()+" **距离--->"+ps3[0].getD());
-//        System.out.println("**点2--->"+ps3[1].getName()+" **坐标--->"+ps3[1].getX()+","+ps3[1].getY()+" **距离--->"+ps3[1].getD());
-//        System.out.println("**点3--->"+ps3[2].getName()+" **坐标--->"+ps3[2].getX()+","+ps3[2].getY()+" **距离--->"+ps3[2].getD());
         boolean isNext = false;
         //最大尝试纠正次数
         int pollingBound = MAX_ADJUST;
