@@ -16,13 +16,39 @@ public class PointInfo {
     private double y;
     //   距离
     private double d;
+    //信号强度
+    private double rssi;
 
-    public PointInfo(String name, double x, double y, double d) {
+    /**
+     * 构造函数，设置设备点
+     * @param name
+     * @param x
+     * @param y
+     */
+    public PointInfo(String name, double x, double y) {
         this.x = x;
         this.y = y;
-        this.d = d;
         this.name = name;
     }
+
+    /**
+     * 构造函数，设置实时设备信息
+     * @param rssi
+     * @param d
+     * @param name
+     */
+    public PointInfo(double rssi,double d,String name) {
+        this.d = d;
+        this.rssi=rssi;
+        this.name = name;
+    }
+    public PointInfo(String name, double x, double y,double d) {
+        this.x = x;
+        this.y = y;
+        this.name = name;
+        this.d=d;
+    }
+
 
     public String getName() {
         return name;
@@ -54,5 +80,13 @@ public class PointInfo {
 
     public void setD(double d) {
         this.d = d;
+    }
+
+    public double getRssi() {
+        return rssi;
+    }
+
+    public void setRssi(double rssi) {
+        this.rssi = rssi;
     }
 }

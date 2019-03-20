@@ -1,7 +1,6 @@
 package example.com.wifi_location;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -11,38 +10,46 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import example.com.wifi_location.service.PointService;
+import example.com.wifi_location.service.LocationService;
 import example.com.wifi_location.vo.PointInfo;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private PointService pointService;
+    private LocationService locationService;
     private Button btRefresh;
     private List<PointInfo> pointInfos;
     private MyAdapt myAdapt;
+    private TextView tvMyXY;
+    private TextView tvMyD;
 
-    private WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pointService=new PointService();
-        wifiManager= (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
-        pointInfos = pointService.getPointInfos();
+        locationService = new LocationService(getApplicationContext());
+        ListView listView = findViewById(R.id.lv_wifi);
+        AsyncTask.execute(() -> {
+            pointInfos = locationService.getPointInfos();
+            myAdapt = new MyAdapt();
+            listView.setAdapter(myAdapt);
+        });
 
+        tvMyXY=findViewById(R.id.tv_my_xy);
+        tvMyXY.setText("--");
+        tvMyD=findViewById(R.id.tv_my_d);
+        tvMyD.setText("--");
         btRefresh = findViewById(R.id.bt_refresh);
         btRefresh.setOnClickListener(v -> {
             refresh(v);
         });
 
-        ListView listView = findViewById(R.id.lv_wifi);
-        myAdapt = new MyAdapt();
-        listView.setAdapter(myAdapt);
+
+
 
 
     }
@@ -53,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void refresh(View view) {
-        pointInfos = pointService.getPointInfos();
+        pointInfos = locationService.getPointInfos();
+        System.out.println(locationService.getWifiManager().getConnectionInfo().getRssi());
         myAdapt.notifyDataSetChanged();
 
     }
@@ -127,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             xy.setText(info.getX() + "," + info.getY());
 
             TextView distance = view.findViewById(R.id.item_tv_distance);
-            distance.setText(String.valueOf(info.getD()));
+            distance.setText(String.valueOf(info.getD())+"("+info.getRssi()+")");
 
             return view;
         }
