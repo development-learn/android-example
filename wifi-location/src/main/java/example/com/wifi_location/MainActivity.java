@@ -6,11 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
+import example.com.wifi_location.algorithm.TrilaterationLocationAlgorithm;
 import example.com.wifi_location.service.LocationService;
+import example.com.wifi_location.vo.LocationInfo;
 import example.com.wifi_location.vo.PointInfo;
 
 import java.util.List;
@@ -23,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private MyAdapt myAdapt;
     private TextView tvMyXY;
     private TextView tvMyD;
+    private  static TrilaterationLocationAlgorithm trilaterationLocationAlgorithm=new TrilaterationLocationAlgorithm();
 
 
     @Override
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             pointInfos = locationService.getPointInfos();
             myAdapt = new MyAdapt();
             listView.setAdapter(myAdapt);
+            showLocation();
         });
 
         tvMyXY=findViewById(R.id.tv_my_xy);
@@ -63,9 +64,23 @@ public class MainActivity extends AppCompatActivity {
         pointInfos = locationService.getPointInfos();
         System.out.println(locationService.getWifiManager().getConnectionInfo().getRssi());
         myAdapt.notifyDataSetChanged();
+        showLocation();
 
     }
 
+    private void showLocation(){
+        PointInfo[] ps=new PointInfo[pointInfos.size()];
+        for (int i=0;i<pointInfos.size();i++){
+            ps[i]=pointInfos.get(i);
+        }
+        LocationInfo locationInfo= trilaterationLocationAlgorithm.getLogcation(ps);
+        if(locationInfo!=null){
+            tvMyXY.setText(locationInfo.getxAxis()+","+locationInfo.getyAxis());
+        }else{
+            Toast.makeText(getApplicationContext(),"计算距离异常！",Toast.LENGTH_SHORT);
+        }
+
+    }
     public class MyAdapt extends BaseAdapter {
 
         /**

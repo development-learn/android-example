@@ -59,6 +59,9 @@ public interface LocationAlgorithm {
             if(locationInfo.getyAxis()==0){
                 locationInfo.setyAxis(0.0);
             }
+            locationInfo.setxAxis((double) Math.round((locationInfo.getxAxis()) * 100) / 100);
+            locationInfo.setyAxis((double) Math.round((locationInfo.getyAxis()) * 100) / 100);
+
         }
         return locationInfo;
     }
