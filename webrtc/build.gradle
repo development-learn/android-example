@@ -39,5 +39,5 @@ dependencies {
 
     implementation 'com.neovisionaries:nv-websocket-client:2.2'
 
-    implementation 'org.webrtc:google-webrtc:1.0.+'
+    implementation 'org.webrtc:google-webrtc:1.0.26885'
 }
