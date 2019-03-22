@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">android-example</string>
+    <string name="app_name">webrtc</string>
     <string name="action_settings">Settings</string>
 </resources>
