@@ -29,27 +29,8 @@ public interface LocationAlgorithm {
         if (!checkPoint(ps)) {
             return null;
         }
-        PointInfo[] ps3 = getPoints(ps);
-        boolean isNext = false;
-        //最大尝试纠正次数
-        int pollingBound = MAX_ADJUST;
-        LocationInfo locationInfo;
-        boolean isX = byDiff(ps3);
-        do {
-            PointInfo[] temp_ps3 = correctXY(ps3, pollingBound, isX);
-            locationInfo = calculate(temp_ps3[0], temp_ps3[1], temp_ps3[2]);
-//         返回的坐标不符合三边定位,尝试适当纠正
-            isNext = locationInfo.getxAxis() == null || locationInfo.getyAxis() == null || Double.isNaN(locationInfo.getxAxis()) || Double.isNaN(locationInfo.getyAxis()) || Double.isInfinite(locationInfo.getxAxis()) || Double.isInfinite(locationInfo.getyAxis());
-            if (isNext) {
-                temp_ps3 = correctXY(ps3, pollingBound, !isX);
-                locationInfo = calculate(temp_ps3[0], temp_ps3[1], temp_ps3[2]);
-
-            }
-            pollingBound--;
-
-        } while (isNext && pollingBound > 0);
-
-        if(!isNext){
+        LocationInfo locationInfo= calculate(getPoints(ps));
+        if(isOk(locationInfo)){
             if(locationInfo.getxAxis()==0){
                 locationInfo.setxAxis(0.0);
             }
@@ -63,53 +44,6 @@ public interface LocationAlgorithm {
         return locationInfo;
     }
 
-    /**
-     * 通过xy的差值来决定位移那个坐标
-     *
-     * @param ps3
-     * @return
-     */
-    default boolean byDiff(PointInfo[] ps3) {
-        double diff_x = 0;
-        double diff_y = 0;
-        Collections.sort(Arrays.asList(ps3), (o1, o2) -> {
-            return new Double(o1.getX() - o2.getX()).intValue();
-        });
-        diff_x = (ps3[2].getX() - ps3[1].getX()) + (ps3[1].getX() - ps3[0].getX());
-        Collections.sort(Arrays.asList(ps3), (o1, o2) -> {
-            return new Double(o1.getX() - o2.getX()).intValue();
-        });
-        diff_y = (ps3[2].getY() - ps3[1].getY()) + (ps3[1].getY() - ps3[0].getY());
-        if (diff_x >= diff_y) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * 进行坐标纠正
-     *
-     * @param ps3
-     * @param pollingBound
-     * @return
-     */
-    default PointInfo[] correctXY(PointInfo[] ps3, int pollingBound, boolean isX) {
-        PointInfo[] temp_ps3 = new PointInfo[3];
-        for (int i = 0; i < ps3.length; i++) {
-            PointInfo t_p = new PointInfo(ps3[i].getName(), ps3[i].getX(), ps3[i].getY(), ps3[i].getD());
-            temp_ps3[i] = t_p;
-        }
-        if (pollingBound != MAX_ADJUST) {
-            //不是第一次，开始正坐标
-            if (isX) {
-                temp_ps3[2].setX(temp_ps3[2].getX() - (CORRECT_UNIT * (MAX_ADJUST - pollingBound)));
-            } else {
-                temp_ps3[2].setY(temp_ps3[2].getY() - (CORRECT_UNIT * (MAX_ADJUST - pollingBound)));
-            }
-        }
-        return temp_ps3;
-    }
 
     /**
      * 获取距离最近的三个设备点
@@ -134,12 +68,10 @@ public interface LocationAlgorithm {
     /**
      * 根据参考点计算位置
      *
-     * @param p1
-     * @param p2
-     * @param p3
+     * @param ps3 三个设备点
      * @return
      */
-    LocationInfo calculate(PointInfo p1, PointInfo p2, PointInfo p3);
+    LocationInfo calculate(PointInfo[] ps3);
 
     /**
      * 检查设备点是否满足定位条件
@@ -154,4 +86,28 @@ public interface LocationAlgorithm {
         return true;
     }
 
+    /**
+     * 检查定位结果是否合理
+     *
+     * @param locationInfo
+     * @return
+     */
+    default boolean isOk(LocationInfo locationInfo) {
+        return !(locationInfo.getxAxis() == null || locationInfo.getyAxis() == null || Double.isNaN(locationInfo.getxAxis()) || Double.isNaN(locationInfo.getyAxis()) || Double.isInfinite(locationInfo.getxAxis()) || Double.isInfinite(locationInfo.getyAxis()));
+    }
+
+    /**
+     * 深度克隆
+     *
+     * @param temp_ps3
+     * @param ps3
+     * @return
+     */
+    default PointInfo[] clone(PointInfo[] temp_ps3, PointInfo[] ps3) {
+        for (int i = 0; i < ps3.length; i++) {
+            PointInfo t_p = new PointInfo(ps3[i].getName(), ps3[i].getX(), ps3[i].getY(), ps3[i].getD());
+            temp_ps3[i] = t_p;
+        }
+        return temp_ps3;
+    }
 }

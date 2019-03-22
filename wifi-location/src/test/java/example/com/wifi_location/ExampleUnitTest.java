@@ -5,9 +5,8 @@ import example.com.wifi_location.algorithm.TrilaterationLocationAlgorithm;
 import example.com.wifi_location.vo.LocationInfo;
 import example.com.wifi_location.vo.PointInfo;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -25,23 +24,10 @@ public class ExampleUnitTest {
      */
     @Test
     public void testLocationAlgorithm() {
-        TrilaterationLocationAlgorithm trilaterationLocationAlgorithm=new TrilaterationLocationAlgorithm();
+        TrilaterationLocationAlgorithm trilaterationLocationAlgorithm = new TrilaterationLocationAlgorithm();
 
-        PointInfo p1=new PointInfo("w1",3,0,3);
-        PointInfo p2=new PointInfo("w2",0,4,4);
-        PointInfo p3=new PointInfo("w3",3,4,5);
-        PointInfo p4=new PointInfo("w4",0,-9,10);
-//        PointInfo p5=new PointInfo("w5",1,0,1);
-//        PointInfo p6=new PointInfo("w6",0,2,2);
-        PointInfo[] ps=new PointInfo[6];
-        ps[0]=p1;
-        ps[1]=p2;
-        ps[2]=p3;
-        ps[3]=p4;
-//       ps[4]=p5;
-//        ps[5]=p6;
-            LocationInfo locationInfo = trilaterationLocationAlgorithm.getLogcation(ps);
-            System.out.println("*******x坐标："+locationInfo.getxAxis()+";y坐标："+locationInfo.getyAxis()+"*******");
+        LocationInfo locationInfo = trilaterationLocationAlgorithm.getLogcation(create());
+        System.out.println("*******x坐标：" + locationInfo.getxAxis() + ";y坐标：" + locationInfo.getyAxis() + "*******");
 
     }
 
@@ -50,11 +36,50 @@ public class ExampleUnitTest {
      */
     @Test
     public void testDistance() {
-        int rssi=-80;
-        int a=40;
-        int n=4;
+        int rssi = -80;
+        int a = 40;
+        int n = 4;
 
-        System.out.println("*******rssi："+rssi+";相隔1米强度："+a+";环境衰减因子："+n+";计算距离："+RssiTurnDistanceUtil.getDistance(rssi,a,n)+"*******");
+        System.out.println("*******rssi：" + rssi + ";相隔1米强度：" + a + ";环境衰减因子：" + n + ";计算距离：" + RssiTurnDistanceUtil.getDistance(rssi, a, n) + "*******");
 
+    }
+
+    /**
+     * x 轴一条直线
+     *
+     * @return
+     */
+    private PointInfo[] createX() {
+        PointInfo[] ps = new PointInfo[3];
+        ps[0] = new PointInfo("w1", 3, 0, 3);
+        ps[1] = new PointInfo("w2", 4, 0, 4);
+        ps[2] = new PointInfo("w3", 5, 0, 5);
+        return ps;
+    }
+
+    /**
+     * Y 轴一条直线
+     *
+     * @return
+     */
+    private PointInfo[] createY() {
+        PointInfo[] ps = new PointInfo[3];
+        ps[0] = new PointInfo("w1", 0, 3, 3);
+        ps[1] = new PointInfo("w2", 0, 4, 4);
+        ps[2] = new PointInfo("w3", 0, 5, 5);
+        return ps;
+    }
+
+    /**
+     * 不在一条直线
+     *
+     * @return
+     */
+    private PointInfo[] create() {
+        PointInfo[] ps = new PointInfo[3];
+        ps[0] = new PointInfo("w1", 0, 300, 300);
+        ps[1] = new PointInfo("w2", 0, 400, 400);
+        ps[2] = new PointInfo("w3", 300, 400, 500);
+        return ps;
     }
 }
