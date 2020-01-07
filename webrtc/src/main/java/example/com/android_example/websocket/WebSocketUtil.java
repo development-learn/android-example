@@ -20,7 +20,7 @@ public class WebSocketUtil {
 
     }
 
-    private static String URL = "wss://" + RestTemplateUtil.HOST + "/chat/websocket";
+    private static String URL = "wss://" + RestTemplateUtil.WEBSOCKET_HOST + "/chat/websocket";
     private static WebSocketUtil webSocketUtil;
     private WebSocket webSocket;
     private String toUserName;
@@ -53,6 +53,7 @@ public class WebSocketUtil {
             if (MySSLConnectionSocketFactory.getInstance().getTrustrCertificates() != null) {
                 websocketFactory.setSSLSocketFactory(MySSLConnectionSocketFactory.getInstance().getSslSocketFactory());
             }
+            websocketFactory.setVerifyHostname(false);
             return websocketFactory.createSocket(url, 30) //ws地址，和设置超时时间
                     .setFrameQueueSize(5)//设置帧队列最大值为5
                     .setMissingCloseFrameAllowed(false)//设置不允许服务端关闭连接却未发送关闭帧

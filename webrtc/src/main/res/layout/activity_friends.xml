@@ -15,7 +15,7 @@
             android:layout_height="200dp">
         <TextView android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:text="好友列表"
+                  android:text="应急指挥"
                   android:id="@+id/tv_title"
                   android:textSize="20sp"/>
         <TextView android:id="@+id/tv_tip"
@@ -41,7 +41,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="本地" />
+                    android:text="我" />
 
             <org.webrtc.SurfaceViewRenderer
                     android:id="@+id/localView"
@@ -58,7 +58,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="远端"/>
+                    android:text="对方"/>
 
             <org.webrtc.SurfaceViewRenderer
                     android:id="@+id/remoteView"

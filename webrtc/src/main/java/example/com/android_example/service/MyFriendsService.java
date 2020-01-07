@@ -1,11 +1,15 @@
 package example.com.android_example.service;
 
 import android.content.Context;
+
+import com.google.gson.internal.LinkedTreeMap;
+
 import example.com.android_example.response.ResponseEnum;
 import example.com.android_example.response.ResponseVo;
 import example.com.android_example.utils.RestTemplateUtil;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +28,14 @@ public class MyFriendsService {
         LinkedMultiValueMap<String, String> loginMap = new LinkedMultiValueMap<>();
         ResponseVo responseVo = RestTemplateUtil.postWithJwt(context, RestTemplateUtil.MY_FRIENDS, loginMap);
         if (responseVo.getCode() == ResponseEnum.SUCCESS.getCode()) {
-            return (List<String>) responseVo.getResult();
+            LinkedTreeMap<String,Object> map= (LinkedTreeMap<String, Object>) responseVo.getResult();
+            ArrayList<Object> list= (ArrayList<Object>) map.get("records");
+            List<String> results = new ArrayList<>();
+            for(int i=0;i<list.size();i++){
+                LinkedTreeMap<String,Object>  m = (LinkedTreeMap<String, Object>) list.get(i);
+                results.add((String) m.get("userName"));
+            }
+            return results;
         }
         return null;
     }

@@ -1,9 +1,11 @@
 package example.com.android_example;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -35,6 +37,8 @@ public class FriendsActivity extends AppCompatActivity {
     Button btPermit;
     Button btDeny;
     Button btHangup;
+    AudioTrack audioTrack;
+    VideoTrack videoTrack;
 
 
     @Override
@@ -77,7 +81,7 @@ public class FriendsActivity extends AppCompatActivity {
 
         // create AudioSource
         AudioSource audioSource = PeerConnectUtil.getInstance().getPeerConnectionFactory().createAudioSource(new MediaConstraints());
-        AudioTrack audioTrack = PeerConnectUtil.getInstance().getPeerConnectionFactory().createAudioTrack("101", audioSource);
+        audioTrack = PeerConnectUtil.getInstance().getPeerConnectionFactory().createAudioTrack("101", audioSource);
 
 
         // create videoSource
@@ -93,7 +97,7 @@ public class FriendsActivity extends AppCompatActivity {
         localView.setMirror(true);
         localView.init(PeerConnectUtil.getInstance().getEglBaseContext(), null);
         // create VideoTrack
-        VideoTrack videoTrack = PeerConnectUtil.getInstance().getPeerConnectionFactory().createVideoTrack("100", videoSource);
+        videoTrack = PeerConnectUtil.getInstance().getPeerConnectionFactory().createVideoTrack("100", videoSource);
         // display in localView
         videoTrack.addSink(localView);
 
@@ -140,6 +144,7 @@ public class FriendsActivity extends AppCompatActivity {
 
             TextView it_userNmae = view.findViewById(R.id.item_tv_username);
             it_userNmae.setText(username);
+            it_userNmae.setTextColor(Color.BLACK);
             Button call = view.findViewById(R.id.item_bt_call);
             if (isCall) {
                 call.setVisibility(View.INVISIBLE);
@@ -281,8 +286,6 @@ public class FriendsActivity extends AppCompatActivity {
         btHangup.setVisibility(View.INVISIBLE);
         isCall = false;
         myFriendsAdapter.notifyDataSetChanged();
-
-
         PeerConnectUtil.getInstance().hangup(b);
     }
 

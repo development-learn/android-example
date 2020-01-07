@@ -26,7 +26,7 @@ public class ExampleUnitTest {
     public void testLocationAlgorithm() {
         TrilaterationLocationAlgorithm trilaterationLocationAlgorithm = new TrilaterationLocationAlgorithm();
 
-        LocationInfo locationInfo = trilaterationLocationAlgorithm.getLogcation(create());
+        LocationInfo locationInfo = trilaterationLocationAlgorithm.getLogcation(createY());
         System.out.println("*******x坐标：" + locationInfo.getxAxis() + ";y坐标：" + locationInfo.getyAxis() + "*******");
 
     }
@@ -36,9 +36,9 @@ public class ExampleUnitTest {
      */
     @Test
     public void testDistance() {
-        int rssi = -80;
+        int rssi = -90;
         int a = 40;
-        int n = 4;
+        int n = 2;
 
         System.out.println("*******rssi：" + rssi + ";相隔1米强度：" + a + ";环境衰减因子：" + n + ";计算距离：" + RssiTurnDistanceUtil.getDistance(rssi, a, n) + "*******");
 
@@ -79,7 +79,7 @@ public class ExampleUnitTest {
         PointInfo[] ps = new PointInfo[3];
         ps[0] = new PointInfo("w1", 0, 300, 300);
         ps[1] = new PointInfo("w2", 0, 400, 400);
-        ps[2] = new PointInfo("w3", 300, 400, 500);
+        ps[2] = new PointInfo("w3", 300, 400, 501);
         return ps;
     }
 }

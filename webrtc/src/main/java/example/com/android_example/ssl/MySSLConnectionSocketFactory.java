@@ -49,7 +49,7 @@ public class MySSLConnectionSocketFactory {
         X509TrustManager trustManager;
         MySSLConnectionSocketFactory mySSLConnectionSocketFactory=MySSLConnectionSocketFactory.getInstance();
         try {
-            mySSLConnectionSocketFactory.setTrustrCertificates(context.getResources().openRawResource(R.raw.mycer));
+            mySSLConnectionSocketFactory.setTrustrCertificates(context.getResources().openRawResource(R.raw.server));
             trustManager = mySSLConnectionSocketFactory.trustManagerForCertificates(mySSLConnectionSocketFactory.getTrustrCertificates());
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[]{trustManager}, null);
