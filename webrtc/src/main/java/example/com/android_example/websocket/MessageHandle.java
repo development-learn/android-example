@@ -8,4 +8,6 @@ package example.com.android_example.websocket;
 public interface MessageHandle {
 
     void handle(SdpMessage sdpMessage);
+    void success();
+    void fail();
 }

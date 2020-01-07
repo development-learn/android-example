@@ -23,16 +23,19 @@ public class MyWebSocketListener extends WebSocketAdapter {
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
         Log.i("MyWebSocketListener", "建立链接成功");
+        messageHandle.success();
     }
 
     @Override
     public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
         Log.i("MyWebSocketListener", "建立链接错误，原因：" + exception.getMessage());
+        messageHandle.success();
     }
 
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) throws Exception {
         Log.i("MyWebSocketListener", "断开链接");
+        websocket.connect();
     }
 
     @Override

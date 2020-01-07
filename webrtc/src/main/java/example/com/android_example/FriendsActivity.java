@@ -5,23 +5,37 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.springframework.util.StringUtils;
+import org.webrtc.AudioSource;
+import org.webrtc.AudioTrack;
+import org.webrtc.Camera1Enumerator;
+import org.webrtc.IceCandidate;
+import org.webrtc.MediaConstraints;
+import org.webrtc.MediaStream;
+import org.webrtc.PeerConnection;
+import org.webrtc.SurfaceTextureHelper;
+import org.webrtc.SurfaceViewRenderer;
+import org.webrtc.VideoCapturer;
+import org.webrtc.VideoSource;
+import org.webrtc.VideoTrack;
+
+import java.util.List;
+
 import example.com.android_example.service.MyFriendsService;
 import example.com.android_example.utils.JsonUtil;
 import example.com.android_example.webrtc.PeerConnectUtil;
 import example.com.android_example.webrtc.PeerConnectionAdapter;
+import example.com.android_example.websocket.MessageHandle;
 import example.com.android_example.websocket.SdpMessage;
 import example.com.android_example.websocket.WebSocketUtil;
-import org.springframework.util.StringUtils;
-import org.webrtc.*;
-
-import java.util.List;
 
 public class FriendsActivity extends AppCompatActivity {
     private static final String TAG = "FriendsActivity";
@@ -292,47 +306,64 @@ public class FriendsActivity extends AppCompatActivity {
 
     private void initWebSocket() {
         //打开websocket长连接
-        WebSocketUtil.init(getApplicationContext(), sdpMsg -> {
-            if ("call".equals(sdpMsg.getType())) {
+        WebSocketUtil.init(getApplicationContext(), new MessageHandle() {
+            @Override
+            public void handle(SdpMessage sdpMsg) {
+                if ("call".equals(sdpMsg.getType())) {
+                    runOnUiThread(() -> {
+                        //  显示同意、拒绝按钮
+                        btPermit.setVisibility(View.VISIBLE);
+                        btDeny.setVisibility(View.VISIBLE);
+                        isCall = true;
+                        myFriendsAdapter.notifyDataSetChanged();
+                    });
+
+                } else if ("offer".equals(sdpMsg.getType())) {
+                    PeerConnectUtil.getInstance().receiveOffer(sdpMsg);
+                } else if ("answer".equals(sdpMsg.getType())) {
+                    PeerConnectUtil.getInstance().receiveAnswer(sdpMsg);
+                } else if ("deny".equals(sdpMsg.getType())) {
+                    runOnUiThread(() -> {
+                        isCall = false;
+                        myFriendsAdapter.notifyDataSetChanged();
+
+                        btPermit.setVisibility(View.INVISIBLE);
+                        btDeny.setVisibility(View.INVISIBLE);
+                        btHangup.setVisibility(View.INVISIBLE);
+
+                    });
+
+                    PeerConnectUtil.getInstance().deny(false);
+
+                } else if ("hangup".equals(sdpMsg.getType())) {
+                    runOnUiThread(() -> {
+                        //  隐藏同意、拒绝、挂机按钮，显示呼叫按钮
+                        btPermit.setVisibility(View.INVISIBLE);
+                        btDeny.setVisibility(View.INVISIBLE);
+                        btHangup.setVisibility(View.INVISIBLE);
+                        isCall = false;
+                        myFriendsAdapter.notifyDataSetChanged();
+                    });
+
+                    PeerConnectUtil.getInstance().hangup(false);
+
+                } else if ("candidate".equals(sdpMsg.getType()) || StringUtils.hasLength(sdpMsg.getCandidate())) {
+                    PeerConnectUtil.getInstance().setIceCandidate(sdpMsg, PeerConnectUtil.getInstance().getPeerConnection());
+                }
+            }
+
+            @Override
+            public void success() {
                 runOnUiThread(() -> {
-                    //  显示同意、拒绝按钮
-                    btPermit.setVisibility(View.VISIBLE);
-                    btDeny.setVisibility(View.VISIBLE);
-                    isCall = true;
-                    myFriendsAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), "信令服务器连接成功", Toast.LENGTH_SHORT).show();
                 });
+            }
 
-            } else if ("offer".equals(sdpMsg.getType())) {
-                PeerConnectUtil.getInstance().receiveOffer(sdpMsg);
-            } else if ("answer".equals(sdpMsg.getType())) {
-                PeerConnectUtil.getInstance().receiveAnswer(sdpMsg);
-            } else if ("deny".equals(sdpMsg.getType())) {
+            @Override
+            public void fail() {
                 runOnUiThread(() -> {
-                    isCall = false;
-                    myFriendsAdapter.notifyDataSetChanged();
-
-                    btPermit.setVisibility(View.INVISIBLE);
-                    btDeny.setVisibility(View.INVISIBLE);
-                    btHangup.setVisibility(View.INVISIBLE);
-
+                    Toast.makeText(getApplicationContext(), "信令服务器连接失败，请重新登录！", Toast.LENGTH_SHORT).show();
                 });
-
-                PeerConnectUtil.getInstance().deny(false);
-
-            } else if ("hangup".equals(sdpMsg.getType())) {
-                runOnUiThread(() -> {
-                    //  隐藏同意、拒绝、挂机按钮，显示呼叫按钮
-                    btPermit.setVisibility(View.INVISIBLE);
-                    btDeny.setVisibility(View.INVISIBLE);
-                    btHangup.setVisibility(View.INVISIBLE);
-                    isCall = false;
-                    myFriendsAdapter.notifyDataSetChanged();
-                });
-
-                PeerConnectUtil.getInstance().hangup(false);
-
-            } else if ("candidate".equals(sdpMsg.getType()) || StringUtils.hasLength(sdpMsg.getCandidate())) {
-                PeerConnectUtil.getInstance().setIceCandidate(sdpMsg, PeerConnectUtil.getInstance().getPeerConnection());
             }
         });
     }
